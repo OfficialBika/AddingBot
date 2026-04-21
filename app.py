@@ -84,10 +84,10 @@ INLINE_SOURCE_BOTS.update(
 INLINE_SOURCE_COMMAND_MAP: dict[str, str] = dict(KNOWN_INLINE_SOURCE_COMMAND_MAP)
 
 USE_WEBHOOK = os.getenv("USE_WEBHOOK", "false").lower() == "true"
-PUBLIC_URL = (os.getenv("PUBLIC_URL", "").strip() or os.getenv("RENDER_EXTERNAL_URL", "").strip())
+PUBLIC_URL = os.getenv("PUBLIC_URL", "").strip()
 WEBHOOK_PATH = os.getenv("WEBHOOK_PATH", "/webhook").strip() or "/webhook"
 WEBHOOK_SECRET = os.getenv("WEBHOOK_SECRET", "").strip()
-PORT = int(os.getenv("PORT", "10000"))
+PORT = int(os.getenv("PORT", "8080"))
 
 if not BOT_TOKEN:
     raise RuntimeError("BOT_TOKEN is required")
@@ -96,7 +96,7 @@ if not MONGO_URI:
 if not OWNER_IDS:
     raise RuntimeError("OWNER_ID or OWNER_IDS is required")
 if USE_WEBHOOK and (not PUBLIC_URL or not WEBHOOK_SECRET):
-    raise RuntimeError("PUBLIC_URL (or RENDER_EXTERNAL_URL) and WEBHOOK_SECRET are required when USE_WEBHOOK=true")
+    raise RuntimeError("PUBLIC_URL and WEBHOOK_SECRET are required when USE_WEBHOOK=true")
 
 logging.basicConfig(
     level=getattr(logging, LOG_LEVEL, logging.INFO),
@@ -353,6 +353,26 @@ def parse_caption_text_from_message(message: Message) -> ParsedText:
 
 def get_combined_message_text(message: Message) -> str:
     return "\n".join(collect_candidate_texts(message)).strip()
+
+
+def extract_media_handle(message: Message):
+    if message.photo:
+        return "photo", message.photo[-1]
+    if message.video:
+        return "video", message.video
+    return None, None
+
+
+def is_group_chat(message: Message) -> bool:
+    return bool(message.chat and getattr(message.chat, "type", "") in {"group", "supergroup"})
+
+
+def is_private_chat(message: Message) -> bool:
+    return bool(message.chat and getattr(message.chat, "type", "") == "private")
+
+
+def is_default_target_chat(message: Message) -> bool:
+    return bool(DEFAULT_TARGET_CHAT is not None and message.chat and message.chat.id == DEFAULT_TARGET_CHAT)
 
 
 def get_inline_source_username(message: Message) -> str:
@@ -1129,7 +1149,6 @@ async def on_startup(bot: Bot) -> None:
     logger.info("Forward source title commands: %s", FORWARD_SOURCE_TITLE_COMMAND_MAP or "none")
     logger.info("Added log channel: %s", ADDED_LOG_CHANNEL or "none")
     logger.info("Default target chat: %s", DEFAULT_TARGET_CHAT if DEFAULT_TARGET_CHAT is not None else "none")
-    logger.info("Public URL: %s", PUBLIC_URL or "none")
     logger.info("Mode: %s", "WEBHOOK" if USE_WEBHOOK else "POLLING")
 
 
