@@ -1,0 +1,34 @@
+services:
+  - type: web
+    name: telegram-adding-bot
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python app.py
+    healthCheckPath: /healthz
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: USE_WEBHOOK
+        value: "true"
+      - key: WEBHOOK_PATH
+        value: /webhook
+      - key: PORT
+        value: "10000"
+      - key: LOG_LEVEL
+        value: INFO
+      - key: BOT_TOKEN
+        sync: false
+      - key: MONGO_URI
+        sync: false
+      - key: OWNER_IDS
+        sync: false
+      - key: DEFAULT_TARGET_CHAT
+        sync: false
+      - key: ADDED_LOG_CHANNEL
+        sync: false
+      - key: WEBHOOK_SECRET
+        generateValue: true
+      - key: INLINE_SOURCE_BOTS
+        value: "@Character_Catcher_Bot,@Character_Seizer_Bot,@CaptureCharacterBot,@Takers_character_bot,@Grab_Your_Waifu_Bot"
+      - key: FORWARD_SOURCE_COMMANDS
+        value: "@CaptureDatabase:/capture,@Seizer_Database:/seize,CAPTURE|UPLOADS:/capture,SEIZER DATABASE:/seize"
