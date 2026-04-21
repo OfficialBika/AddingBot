@@ -1,4 +1,4 @@
-# Adding Bot for Render
+# Adding Bot
 
 Adding-only Telegram bot for saving and updating media-name mappings into MongoDB.
 
