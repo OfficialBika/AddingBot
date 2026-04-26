@@ -273,7 +273,7 @@ def strip_grab_name_suffix(value: str) -> str:
 
 
 def finalize_parsed_text(parsed: ParsedText) -> ParsedText:
-    parsed.name = strip_grab_name_suffix(strip_trailing_badge(strip_leading_symbols(parsed.name or ""))) or None
+    parsed.name = strip_grab_name_suffix(strip_leading_symbols(parsed.name or "")) or None
     parsed.anime_name = strip_trailing_badge(strip_leading_symbols(parsed.anime_name or "")) or None
     parsed.rarity = strip_leading_symbols(parsed.rarity or "") or None
     parsed.card_id = clean_value(parsed.card_id or "") or None
