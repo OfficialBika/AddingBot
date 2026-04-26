@@ -61,7 +61,7 @@ DEFAULT_TARGET_CHAT = (
 
 FORWARD_SOURCE_COMMANDS_RAW = os.getenv(
     "FORWARD_SOURCE_COMMANDS",
-    "@CaptureDatabase:/capture,@Seizer_Database:/seize,CAPTURE|UPLOADS:/capture,SEIZER DATABASE:/seize",
+    "@CaptureDatabase:/capture,@Seizer_Database:/seize,@hallowuploads:/hallow,Hallow Upload:/hallow,CAPTURE|UPLOADS:/capture,SEIZER DATABASE:/seize",
 ).strip()
 
 KNOWN_INLINE_SOURCE_COMMAND_MAP: dict[str, str] = {
